@@ -32,7 +32,6 @@ _ReSharper.CSharp/
 /Temp
 /Logs
 /Unity/CSharp60Support/compilation.log
-/.vs
 /Server/.vs/
 /Unity/.vs/
 /Tools/MongoDB
@@ -69,3 +68,4 @@ libGCloudVoice.a
 /Unity/Bundles
 /Unity/MemoryCaptures/
 /Unity/*.csproj
+/.vs
