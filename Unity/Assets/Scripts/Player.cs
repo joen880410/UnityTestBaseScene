@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public enum PlayerStat
 {
@@ -18,15 +19,26 @@ public class Player : MonoBehaviour
     public int moveStep;
     public int nowStep = 0;
     private PlayerStat playerStat;
+    public Button button1;
+    public Text Text_button1;
+    public Button button2;
+    public Text Text_button2;
+    public Text Text_money;
+    public Text Text_UID;
     void Start()
     {
+        Text_money.text = money.ToString();
+        Text_UID.text = Id.ToString();
         playerStat = PlayerStat.Wait;
+        button1?.gameObject.SetActive(!isAuto);
+        button2?.gameObject.SetActive(!isAuto);
     }
 
     void Update()
     {
         if (GameManager.instance.endGame)
             return;
+
         switch (playerStat)
         {
             case PlayerStat.Wait:
@@ -49,6 +61,12 @@ public class Player : MonoBehaviour
             default:
                 break;
         }
+        UpdateUI();
+    }
+    public void UpdateUI()
+    {
+        Text_money.text = money.ToString();
+        Text_UID.text = Id.ToString();
     }
     public void OnClick()
     {

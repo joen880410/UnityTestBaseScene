@@ -7,27 +7,41 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
     public List<MapTiles> maps = new List<MapTiles>();
+    public List<MapTiles> instantiateMaps = new List<MapTiles>();
     public List<Player> players = new List<Player>();
     public long playerMoney;
     public int rewardMoney;
-    public int playerCount;
     public Player nowPlayPlayer;
     public int index;
     public bool endGame = false;
-    private void Awake()
+    private async void Awake()
     {
         if (instance == null)
         {
             instance = this;
         }
+        GameObject MapGroup = new GameObject("MapGroup");
+        for (int i = 0; i < maps.Count; i++)
+        {
+            var map = maps[i];
+            var result = (await AddrssableAsync.instance.LoadAsync("Map")).WaitForCompletion();
+            if (result == null)
+            {
+                Debug.LogError($"找不到資源:{map.name}");
+                continue;
+            }
+            var mapObject = (GameObject)GameObject.Instantiate(result, MapGroup.transform);
+            var mapTilesComponent = mapObject.GetComponent<MapObject>();
+            mapTilesComponent.mapTiles = map;
+            instantiateMaps.Add(mapTilesComponent.mapTiles);
+        }
     }
     // Start is called before the first frame update
     void Start()
     {
-        //檢查玩家人數
-        if (players.Count < playerCount)
+        if (instantiateMaps.Count != maps.Count)
         {
-            Debug.Log("人數不足");
+            return;
         }
         //檢查所有玩家的金額
         for (int i = 0; i < players.Count; i++)
@@ -39,7 +53,7 @@ public class GameManager : MonoBehaviour
             }
         }
         Debug.Log("遊戲開始");
-        var index = Random.Range(0, playerCount);
+        var index = Random.Range(0, players.Count);
         ChangePlayer(index);
 
         endGame = false;
@@ -62,6 +76,10 @@ public class GameManager : MonoBehaviour
         nowPlayPlayer.nowStep = nowPlayPlayer.moveStep;
         Debug.Log($"玩家{nowPlayPlayer.Id}移動:{nowPlayPlayer.moveStep}步");
         var map = GetMap(nowPlayPlayer.nowStep);
+        if (map == null)
+        {
+            return;
+        }
         if (map.owneruid != nowPlayPlayer.Id && map.owneruid != 0)
         {
             var mapOwner = players.FirstOrDefault(e => e.Id == map.owneruid);
@@ -76,7 +94,11 @@ public class GameManager : MonoBehaviour
 
     public void BuyMap(bool isBuy)
     {
-        var map = GetMap(nowPlayPlayer.nowStep % maps.Count);
+        var map = GetMap(nowPlayPlayer.nowStep % instantiateMaps.Count);
+        if (map == null)
+        {
+            return;
+        }
         if (map.isCanBuy && map.owneruid == 0)
         {
             if (map.price > nowPlayPlayer.money)
@@ -105,12 +127,16 @@ public class GameManager : MonoBehaviour
 
     public MapTiles GetMap(int index)
     {
-        return maps[index];
+        if (instantiateMaps.Count <= 0)
+        {
+            return null;
+        }
+        return instantiateMaps[index];
     }
 
     private void ChangeNext()
     {
-        index = (index + 1) % playerCount;
+        index = (index + 1) % players.Count;
         ChangePlayer(index);
     }
     private void ChangePlayer(int index)
