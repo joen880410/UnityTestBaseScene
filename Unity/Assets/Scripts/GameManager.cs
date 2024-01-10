@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -27,7 +27,7 @@ public class GameManager : MonoBehaviour
             var result = (await AddrssableAsync.instance.LoadAsync("Map")).WaitForCompletion();
             if (result == null)
             {
-                Debug.LogError($"§ä¤£¨ì¸ê·½:{map.name}");
+                Debug.LogError($"æ‰¾ä¸åˆ°è³‡æº:{map.name}");
                 continue;
             }
             var mapObject = (GameObject)GameObject.Instantiate(result, MapGroup.transform);
@@ -43,7 +43,7 @@ public class GameManager : MonoBehaviour
         {
             return;
         }
-        //ÀË¬d©Ò¦³ª±®aªºª÷ÃB
+        //æª¢æŸ¥æ‰€æœ‰ç©å®¶çš„é‡‘é¡
         for (int i = 0; i < players.Count; i++)
         {
             var player = players[i];
@@ -52,7 +52,7 @@ public class GameManager : MonoBehaviour
                 player.money = playerMoney;
             }
         }
-        Debug.Log("¹CÀ¸¶}©l");
+        Debug.Log("éŠæˆ²é–‹å§‹");
         var index = Random.Range(0, players.Count);
         ChangePlayer(index);
 
@@ -74,7 +74,7 @@ public class GameManager : MonoBehaviour
     private void PlayerMove()
     {
         nowPlayPlayer.nowStep = nowPlayPlayer.moveStep;
-        Debug.Log($"ª±®a{nowPlayPlayer.Id}²¾°Ê:{nowPlayPlayer.moveStep}¨B");
+        Debug.Log($"ç©å®¶{nowPlayPlayer.Id}ç§»å‹•:{nowPlayPlayer.moveStep}æ­¥");
         var map = GetMap(nowPlayPlayer.nowStep);
         if (map == null)
         {
@@ -83,11 +83,11 @@ public class GameManager : MonoBehaviour
         if (map.owneruid != nowPlayPlayer.Id && map.owneruid != 0)
         {
             var mapOwner = players.FirstOrDefault(e => e.Id == map.owneruid);
-            //3­¿¹L¸ô¶Oµ¹¤wÁÊ¶Rªºª±®a
+            //3å€éè·¯è²»çµ¦å·²è³¼è²·çš„ç©å®¶
             var tolls = map.price * 1;
             mapOwner.money += tolls;
             nowPlayPlayer.money -= tolls;
-            Debug.Log($"ª±®a{nowPlayPlayer.Id}µ¹¤ä¥I¹L¸ô¶O:{tolls}µ¹{mapOwner.Id}");
+            Debug.Log($"ç©å®¶{nowPlayPlayer.Id}çµ¦æ”¯ä»˜éè·¯è²»:{tolls}çµ¦{mapOwner.Id}");
         }
         nowPlayPlayer.ChangeStat(PlayerStat.Buy);
     }
@@ -103,11 +103,11 @@ public class GameManager : MonoBehaviour
         {
             if (map.price > nowPlayPlayer.money)
             {
-                Debug.Log($"ª±®a{nowPlayPlayer.Id}ÁÊ¶R:{map.name}ª÷ÃB¤£¨¬");
+                Debug.Log($"ç©å®¶{nowPlayPlayer.Id}è³¼è²·:{map.name}é‡‘é¡ä¸è¶³");
             }
             if (isBuy || nowPlayPlayer.isAuto)
             {
-                Debug.Log($"ª±®a{nowPlayPlayer.Id}ÁÊ¶R:{map.name}");
+                Debug.Log($"ç©å®¶{nowPlayPlayer.Id}è³¼è²·:{map.name}");
                 nowPlayPlayer.money -= map.price;
                 map.BuyMap(nowPlayPlayer.Id);
             }
@@ -120,7 +120,7 @@ public class GameManager : MonoBehaviour
         var losePlayer = players.FirstOrDefault(e => e.money < 0);
         if (losePlayer != null)
         {
-            Debug.Log($"ª±®a{losePlayer.Id}¿é¤F");
+            Debug.Log($"ç©å®¶{losePlayer.Id}è¼¸äº†");
             endGame = true;
         }
     }
@@ -143,6 +143,6 @@ public class GameManager : MonoBehaviour
     {
         nowPlayPlayer = players[index];
         nowPlayPlayer.ChangeStat(PlayerStat.Move);
-        Debug.Log($"ª±®a{nowPlayPlayer.Id}¶}©l");
+        Debug.Log($"ç©å®¶{nowPlayPlayer.Id}é–‹å§‹");
     }
 }
