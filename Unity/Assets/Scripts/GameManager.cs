@@ -1,48 +1,39 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    public enum GameStatus
+    {
+        None,
+        Wait,
+        Start,
+        End,
+    }
+
     public static GameManager instance;
-    public List<MapTiles> maps = new List<MapTiles>();
-    public List<MapTiles> instantiateMaps = new List<MapTiles>();
+    public List<MapObject> instantiateMaps = new List<MapObject>();
     public List<Player> players = new List<Player>();
     public long playerMoney;
     public int rewardMoney;
     public Player nowPlayPlayer;
     public int index;
-    public bool endGame = false;
-    private async void Awake()
+    public GameStatus gameStatus = GameStatus.None;
+    public const int UpdateTimeValue = 1;
+    public DateTime UpdateTime;
+    private void Awake()
     {
         if (instance == null)
         {
             instance = this;
         }
-        GameObject MapGroup = new GameObject("MapGroup");
-        for (int i = 0; i < maps.Count; i++)
-        {
-            var map = maps[i];
-            var result = (await AddrssableAsync.instance.LoadAsync("Map")).WaitForCompletion();
-            if (result == null)
-            {
-                Debug.LogError($"找不到資源:{map.name}");
-                continue;
-            }
-            var mapObject = (GameObject)GameObject.Instantiate(result, MapGroup.transform);
-            var mapTilesComponent = mapObject.GetComponent<MapObject>();
-            mapTilesComponent.mapTiles = map;
-            instantiateMaps.Add(mapTilesComponent.mapTiles);
-        }
     }
+
     // Start is called before the first frame update
     void Start()
     {
-        if (instantiateMaps.Count != maps.Count)
-        {
-            return;
-        }
         //檢查所有玩家的金額
         for (int i = 0; i < players.Count; i++)
         {
@@ -53,79 +44,98 @@ public class GameManager : MonoBehaviour
             }
         }
         Debug.Log("遊戲開始");
-        var index = Random.Range(0, players.Count);
+        gameStatus = GameStatus.Start;
+        var index = UnityEngine.Random.Range(0, players.Count);
         ChangePlayer(index);
-
-        endGame = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (endGame)
-            return;
-        if (nowPlayPlayer.moveStep != 0)
+        if (true)
         {
-            PlayerMove();
+            UpdateTime = DateTime.Now.AddSeconds(UpdateTimeValue);
+            //Debug.LogError(UpdateTime);
+            switch (gameStatus)
+            {
+                case GameStatus.None:
+                case GameStatus.Wait:
+                case GameStatus.End:
+                    break;
+                case GameStatus.Start:
+                    TryCheckPlayerLose();
+                    break;
+            }
         }
-        PlayerLose();
     }
 
-    private void PlayerMove()
+    public void PlayerMove(Player player)
     {
-        nowPlayPlayer.nowStep = nowPlayPlayer.moveStep;
-        Debug.Log($"玩家{nowPlayPlayer.Id}移動:{nowPlayPlayer.moveStep}步");
-        var map = GetMap(nowPlayPlayer.nowStep);
+        Debug.Log($"玩家{player.Id}移動:{player.moveStep}步");
+        var map = GetMap(player.nowStep % instantiateMaps.Count);
         if (map == null)
         {
             return;
         }
-        if (map.owneruid != nowPlayPlayer.Id && map.owneruid != 0)
+        if (map.owneruid != player.Id && map.owneruid != 0)
         {
             var mapOwner = players.FirstOrDefault(e => e.Id == map.owneruid);
             //3倍過路費給已購買的玩家
             var tolls = map.price * 1;
             mapOwner.money += tolls;
-            nowPlayPlayer.money -= tolls;
-            Debug.Log($"玩家{nowPlayPlayer.Id}給支付過路費:{tolls}給{mapOwner.Id}");
+            player.money -= tolls;
+            Debug.Log($"玩家{player.Id}給支付過路費:{tolls}給{mapOwner.Id}");
         }
-        nowPlayPlayer.ChangeStat(PlayerStat.Buy);
+        player.ChangeStat(PlayerStat.Buy);
     }
 
-    public void BuyMap(bool isBuy)
+    public void BuyMap(Player player, bool isBuy)
     {
-        var map = GetMap(nowPlayPlayer.nowStep % instantiateMaps.Count);
+        var map = GetMap(player.nowStep % instantiateMaps.Count);
         if (map == null)
         {
             return;
         }
         if (map.isCanBuy && map.owneruid == 0)
         {
-            if (map.price > nowPlayPlayer.money)
+            if (map.price > player.money)
             {
-                Debug.Log($"玩家{nowPlayPlayer.Id}購買:{map.name}金額不足");
+                Debug.Log($"玩家{player.Id}購買:{map.name}金額不足");
             }
-            if (isBuy || nowPlayPlayer.isAuto)
+            if (isBuy || player.isAuto)
             {
-                Debug.Log($"玩家{nowPlayPlayer.Id}購買:{map.name}");
-                nowPlayPlayer.money -= map.price;
-                map.BuyMap(nowPlayPlayer.Id);
+                Debug.Log($"玩家{player.Id}購買:{map.name}");
+                player.money -= map.price;
+                map.BuyMap(player.Id);
             }
         }
         ChangeNext();
     }
-
-    public void PlayerLose()
+    /// <summary>
+    /// 檢查地圖是否可以購買
+    /// </summary>
+    /// <returns></returns>
+    public bool CanBuy(Player player)
+    {
+        var map = GetMap(player.nowStep % instantiateMaps.Count);
+        if (map == null)
+            return false;
+        if (map.isCanBuy && map.owneruid == 0)
+            return true;
+        else
+            return false;
+    }
+    public void TryCheckPlayerLose()
     {
         var losePlayer = players.FirstOrDefault(e => e.money < 0);
         if (losePlayer != null)
         {
             Debug.Log($"玩家{losePlayer.Id}輸了");
-            endGame = true;
+            gameStatus = GameStatus.End;
         }
     }
 
-    public MapTiles GetMap(int index)
+    public MapObject GetMap(int index)
     {
         if (instantiateMaps.Count <= 0)
         {
@@ -134,13 +144,17 @@ public class GameManager : MonoBehaviour
         return instantiateMaps[index];
     }
 
-    private void ChangeNext()
+    public void ChangeNext()
     {
         index = (index + 1) % players.Count;
         ChangePlayer(index);
     }
     private void ChangePlayer(int index)
     {
+        if (nowPlayPlayer != null)
+        {
+            nowPlayPlayer.ChangeStat(PlayerStat.Wait);
+        }
         nowPlayPlayer = players[index];
         nowPlayPlayer.ChangeStat(PlayerStat.Move);
         Debug.Log($"玩家{nowPlayPlayer.Id}開始");

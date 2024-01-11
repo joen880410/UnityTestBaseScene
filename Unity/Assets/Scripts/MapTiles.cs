@@ -22,9 +22,5 @@ public class MapTiles : ScriptableObject
     public long owneruid;
     [Header("地圖目前狀態")]
     public MapStage stage;
-    public void BuyMap(int playerUid)
-    {
-        owneruid = playerUid;
-        stage = MapStage.stage1;
-    }
+    
 }
