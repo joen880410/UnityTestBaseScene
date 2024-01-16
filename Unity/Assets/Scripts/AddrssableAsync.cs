@@ -7,32 +7,37 @@ using UnityEngine.ResourceManagement.ResourceProviders;
 using UnityEngine.SceneManagement;
 
 
-public class AddrssableAsync : MonoBehaviour
+public static class AddrssableAsync
 {
-    public static AddrssableAsync instance;
     //addressable label的Key
     public const string AssetBundleDependicKey = "AllAsssetBundle";
 
-    public AddrssableAsync()
+    static AddrssableAsync()
     {
-        if (instance == null)
+        Awake();
+    }
+    public static void Awake()
+    {
+        Addressables.InitializeAsync().WaitForCompletion();
+        var updates = Addressables.CheckForCatalogUpdates().WaitForCompletion();
+        if (updates.Count > 0)
         {
-            instance = this;
+            Addressables.UpdateCatalogs().WaitForCompletion();
         }
+
+        //Addressables.InitializeAsync().Completed += (Result) =>
+        //{
+        //    Addressables.CheckForCatalogUpdates().WaitForCompletion();
+        //    Addressables.UpdateCatalogs().WaitForCompletion();
+        //    //await InitCompletedCallback();
+        //};
     }
-    public void Awake()
-    {
-        Addressables.InitializeAsync().Completed += async (Result) =>
-        {
-            await InitCompletedCallback();
-        };
-    }
-    public async Task InitCompletedCallback()
+    private static async Task InitCompletedCallback()
     {
         var CheckResult = Addressables.CheckForCatalogUpdates();
         await CheckCataLogsCompleted(CheckResult);
     }
-    private async Task CheckCataLogsCompleted(AsyncOperationHandle<List<string>> checkCataLogsResult)
+    private static async Task CheckCataLogsCompleted(AsyncOperationHandle<List<string>> checkCataLogsResult)
     {
         if (checkCataLogsResult.Result.Count > 0)
         {
@@ -42,13 +47,13 @@ public class AddrssableAsync : MonoBehaviour
 
 
 
-    public Task UpdateCatalogs()
+    public static Task UpdateCatalogs()
     {
         return Addressables.UpdateCatalogs().Task;
     }
 
     #region Load
-    public async Task<AsyncOperationHandle<Object>> LoadAsync(string assetName)
+    public static async Task<AsyncOperationHandle<Object>> LoadAsync(string assetName)
     {
         await Task.CompletedTask;
         try
@@ -62,22 +67,21 @@ public class AddrssableAsync : MonoBehaviour
         }
 
     }
-    public async Task<AsyncOperationHandle<GameObject>> LoadInstantiate(string assetName, Transform parent = null, bool instantiateInWorldSpace = false, bool trackHandle = true)
+    public static async Task<GameObject> LoadInstantiate(string assetName, Transform parent = null, bool instantiateInWorldSpace = false, bool trackHandle = true)
     {
-        await Task.CompletedTask;
         try
         {
-            return Addressables.InstantiateAsync(assetName, parent, instantiateInWorldSpace, trackHandle);
+            return await Addressables.InstantiateAsync(assetName, parent, instantiateInWorldSpace, trackHandle).Task;
         }
         catch (System.Exception e)
         {
             Debug.LogError(e);
-            return new AsyncOperationHandle<GameObject>();
+            return null;
         }
 
-
     }
-    public async Task<AsyncOperationHandle<SceneInstance>> LoadSceneAsync(string sceneName, LoadSceneMode loadMode = LoadSceneMode.Single)
+
+    public static async Task<AsyncOperationHandle<SceneInstance>> LoadSceneAsync(string sceneName, LoadSceneMode loadMode = LoadSceneMode.Single)
     {
         await Task.CompletedTask;
         try
@@ -89,24 +93,22 @@ public class AddrssableAsync : MonoBehaviour
             Debug.LogError(e);
             return new AsyncOperationHandle<SceneInstance>();
         }
-
-
     }
     #endregion
 
     #region Unload
-    public void Unload(Object asset)
+    public static void Unload(Object asset)
     {
         Addressables.Release(asset);
     }
-    public void Unload(AsyncOperationHandle<Object> async)
+    public static void Unload(AsyncOperationHandle<Object> async)
     {
         if (async.IsValid())
         {
             Addressables.Release(async);
         }
     }
-    public async void UnloadScene(AsyncOperationHandle<SceneInstance> async)
+    public static async void UnloadScene(AsyncOperationHandle<SceneInstance> async)
     {
         try
         {
