@@ -10,7 +10,7 @@ public class MapManager : MonoBehaviour
         for (int i = 0; i < maps.Count; i++)
         {
             var map = maps[i];
-            var result = (await AddrssableAsync.instance.LoadAsync("Map")).WaitForCompletion();
+            var result = (await AddrssableAsync.LoadAsync("Map")).WaitForCompletion();
             if (result == null)
             {
                 Debug.LogError($"§ä¤£¨ì¸ê·½:{map.name}");
