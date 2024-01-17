@@ -1,10 +1,20 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class MapManager : MonoBehaviour
 {
-    public List<MapTiles> maps = new List<MapTiles>();
+    [SerializeField]
+    private List<MapTiles> maps = new List<MapTiles>();
+    private List<MapObject> instantiateMaps = new List<MapObject>();
+    public int mapCount
+    {
+        get
+        {
+            return instantiateMaps.Count;
+        }
+    }
     public async void Awake()
     {
         for (int i = 0; i < maps.Count; i++)
@@ -25,7 +35,11 @@ public class MapManager : MonoBehaviour
             mapTilesComponent.isCanBuy = map.isCanBuy;
             mapTilesComponent.stage = map.stage;
             mapTilesComponent.mapImg = map.mapImg;
-            GameManager.instance.instantiateMaps.Add(mapTilesComponent);
+            instantiateMaps.Add(mapTilesComponent);
         }
+    }
+    public MapObject GetMapObject(int index)
+    {
+        return instantiateMaps[index];
     }
 }

@@ -14,12 +14,11 @@ public class GameManager : MonoBehaviour
     }
 
     public static GameManager instance;
-    public List<MapObject> instantiateMaps = new List<MapObject>();
+    public MapManager mapManager;
     public List<Player> players = new List<Player>();
     public long playerMoney;
     public int rewardMoney;
     public Player nowPlayPlayer;
-    public int index;
     public GameStatus gameStatus = GameStatus.None;
     public const int UpdateTimeValue = 1;
     public DateTime UpdateTime;
@@ -45,13 +44,17 @@ public class GameManager : MonoBehaviour
         }
         Debug.Log("遊戲開始");
         gameStatus = GameStatus.Start;
-        var index = UnityEngine.Random.Range(0, players.Count);
-        ChangePlayer(index);
+        ChangePlayer(UnityEngine.Random.Range(0, players.Count));
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (mapManager == null)
+        {
+            Debug.LogError("mapManager is null");
+            return;
+        }
         if (true)
         {
             UpdateTime = DateTime.Now.AddSeconds(UpdateTimeValue);
@@ -72,7 +75,7 @@ public class GameManager : MonoBehaviour
     public void PlayerMove(Player player)
     {
         Debug.Log($"玩家{player.Id}移動:{player.moveStep}步");
-        var map = GetMap(player.nowStep % instantiateMaps.Count);
+        var map = GetMap(player.nowStep % mapManager.mapCount);
         if (map == null)
         {
             return;
@@ -91,7 +94,7 @@ public class GameManager : MonoBehaviour
 
     public void BuyMap(Player player, bool isBuy)
     {
-        var map = GetMap(player.nowStep % instantiateMaps.Count);
+        var map = GetMap(player.nowStep % mapManager.mapCount);
         if (map == null)
         {
             return;
@@ -117,7 +120,7 @@ public class GameManager : MonoBehaviour
     /// <returns></returns>
     public bool CanBuy(Player player)
     {
-        var map = GetMap(player.nowStep % instantiateMaps.Count);
+        var map = GetMap(player.nowStep % mapManager.mapCount);
         if (map == null)
             return false;
         if (map.isCanBuy && map.owneruid == 0)
@@ -137,15 +140,16 @@ public class GameManager : MonoBehaviour
 
     public MapObject GetMap(int index)
     {
-        if (instantiateMaps.Count <= 0)
+        if (mapManager.mapCount <= 0)
         {
             return null;
         }
-        return instantiateMaps[index];
+        return mapManager.GetMapObject(index);
     }
 
     public void ChangeNext()
     {
+        var index = players.FindIndex(e => e == nowPlayPlayer);
         index = (index + 1) % players.Count;
         ChangePlayer(index);
     }
