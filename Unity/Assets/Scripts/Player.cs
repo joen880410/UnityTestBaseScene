@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -27,9 +27,12 @@ public class Player : MonoBehaviour
     public Text Text_money;
     public Text Text_UID;
     public Text Text_Auto;
+
+    #region -- åˆå§‹åŒ–/é‹ä½œ --
+
     void Awake()
     {
-        Text_Auto.text = isAuto ? "¦Û°Ê" : "¤â°Ê";
+        Text_Auto.text = isAuto ? "è‡ªå‹•" : "æ‰‹å‹•";
         Text_money.text = money.ToString();
         Text_UID.text = Id.ToString();
         button1?.gameObject.SetActive(!isAuto);
@@ -72,6 +75,11 @@ public class Player : MonoBehaviour
             UpdateUI();
         }
     }
+
+    #endregion
+
+    #region --  æ–¹æ³•åƒè€ƒå€ --
+
     public void UpdateUI()
     {
         Text_money.text = money.ToString();
@@ -103,8 +111,8 @@ public class Player : MonoBehaviour
                 {
                     if (GameManager.instance.CanBuy(this))
                     {
-                        Text_button1.text = "ÁÊ¶R¦a¹Ï";
-                        Text_button2.text = "¤£ÁÊ¶R¦a¹Ï";
+                        Text_button1.text = "è³¼è²·åœ°åœ–";
+                        Text_button2.text = "ä¸è³¼è²·åœ°åœ–";
                         button1?.gameObject.SetActive(true);
                         button2?.gameObject.SetActive(true);
                         button1.onClick.AddListener(() => { GameManager.instance.BuyMap(this, true); });
@@ -123,7 +131,7 @@ public class Player : MonoBehaviour
                 if (!isAuto)
                 {
                     button2.gameObject.SetActive(false);
-                    Text_button1.text = "²¾°Ê";
+                    Text_button1.text = "ç§»å‹•";
                     button1?.gameObject.SetActive(true);
                     button1.onClick.AddListener(OnClick);
                 }
@@ -134,4 +142,6 @@ public class Player : MonoBehaviour
                 break;
         }
     }
+
+    #endregion
 }

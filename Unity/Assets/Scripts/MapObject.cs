@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static MapTiles;
@@ -11,7 +11,7 @@ public class MapObject : MonoBehaviour
     public bool isCanBuy;
     public bool isCanUpgrade;
 
-    [Tooltip("Âà°Êª±®a¨¤«×¡A±±¨îª±®a«e¶i¤è¦V")]
+    [Tooltip("è½‰å‹•ç©å®¶è§’åº¦ï¼Œæ§åˆ¶ç©å®¶å‰é€²æ–¹å‘")]
     public Vector3 playerRotationAngle;
 
     public long owneruid;

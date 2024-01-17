@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,7 +13,7 @@ public class MapManager : MonoBehaviour
             var result = (await AddrssableAsync.LoadAsync("Map")).WaitForCompletion();
             if (result == null)
             {
-                Debug.LogError($"�䤣��귽:{map.name}");
+                Debug.LogError($"找不到資源:{map.name}");
                 continue;
             }
             var mapObject = (GameObject)GameObject.Instantiate(result, this.gameObject.transform);
