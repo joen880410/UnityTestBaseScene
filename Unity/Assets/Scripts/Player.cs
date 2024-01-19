@@ -14,19 +14,30 @@ public enum PlayerStat
 }
 public class Player : MonoBehaviour
 {
+    [Header("玩家基本資訊")]
+    [Tooltip("玩家ID")]
     public int Id = 0;
+    [Tooltip("玩家持有的現金")]
     public long money = 1000000;
+    [Tooltip("玩家是否為自動模式")]
     public bool isAuto = false;
     public int moveStep;
-    public int nowStep = 0;
+    public int totalStep = 0;
     public PlayerStat playerStat { private set; get; } = PlayerStat.Wait;
-    public Button button1;
-    public Text Text_button1;
-    public Button button2;
-    public Text Text_button2;
-    public Text Text_money;
-    public Text Text_UID;
-    public Text Text_Auto;
+
+    [Header("UI")]
+    [SerializeField] Button button1;
+    [SerializeField] Text Text_button1;
+    [SerializeField] Button button2;
+    [SerializeField] Text Text_button2;
+    [Tooltip("玩家的UID")]
+    [SerializeField] Text Text_UID;
+    [Tooltip("玩家的總資產")]
+    [SerializeField] Text Text_TotalAssets;
+    [Tooltip("玩家持有的現金")]
+    [SerializeField] Text Text_money;
+    [Tooltip("玩家是否為自動模式")]
+    [SerializeField] Text Text_Auto;
 
     #region -- 初始化/運作 --
 
@@ -88,7 +99,7 @@ public class Player : MonoBehaviour
     public void OnClick()
     {
         moveStep = UnityEngine.Random.Range(2, 13);
-        nowStep += moveStep;
+        totalStep += moveStep;
         GameManager.instance.PlayerMove(this);
 
     }

@@ -75,7 +75,7 @@ public class GameManager : MonoBehaviour
     public void PlayerMove(Player player)
     {
         Debug.Log($"玩家{player.Id}移動:{player.moveStep}步");
-        var map = GetMap(player.nowStep % mapManager.mapCount);
+        var map = GetMap(player.totalStep % mapManager.mapCount);
         if (map == null)
         {
             return;
@@ -94,7 +94,7 @@ public class GameManager : MonoBehaviour
 
     public void BuyMap(Player player, bool isBuy)
     {
-        var map = GetMap(player.nowStep % mapManager.mapCount);
+        var map = GetMap(player.totalStep % mapManager.mapCount);
         if (map == null)
         {
             return;
@@ -120,7 +120,7 @@ public class GameManager : MonoBehaviour
     /// <returns></returns>
     public bool CanBuy(Player player)
     {
-        var map = GetMap(player.nowStep % mapManager.mapCount);
+        var map = GetMap(player.totalStep % mapManager.mapCount);
         if (map == null)
             return false;
         if (map.isCanBuy && map.owneruid == 0)
