@@ -20,6 +20,16 @@ public class MapObject : MonoBehaviour
 
     public long owneruid;
     public MapStage stage;
+    public void SetData(MapTiles mapTiles)
+    {
+        price = mapTiles.price;
+        owneruid = mapTiles.owneruid;
+        mapType = mapTiles.mapType;
+        isCanBuy = mapTiles.isCanBuy;
+        stage = mapTiles.stage;
+        mapImg = mapTiles.mapImg;
+        mapPlaneObject.transform.localScale = mapTiles.mapSize;
+    }
     public void BuyMap(int playerUid)
     {
         owneruid = playerUid;

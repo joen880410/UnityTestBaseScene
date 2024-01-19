@@ -33,15 +33,7 @@ public class MapManager : MonoBehaviour
             var mapObject = (GameObject)GameObject.Instantiate(result, this.gameObject.transform);
 
             mapObject.name = map.name;
-            var mapTilesComponent = mapObject.GetComponent<MapObject>();
-            mapObject.transform.localScale = mapTilesComponent.mapSize;
-            mapTilesComponent.price = map.price;
-            mapTilesComponent.owneruid = map.owneruid;
-            mapTilesComponent.mapType = map.mapType;
-            mapTilesComponent.isCanBuy = map.isCanBuy;
-            mapTilesComponent.stage = map.stage;
-            mapTilesComponent.mapImg = map.mapImg;
-            instantiateMaps.Add(mapTilesComponent);
+            instantiateMaps.Add(mapObject.GetComponent<MapObject>());
         }
     }
     public MapObject GetMapObject(int index)
