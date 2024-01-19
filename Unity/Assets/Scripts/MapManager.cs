@@ -8,6 +8,10 @@ public class MapManager : MonoBehaviour
     [SerializeField]
     private List<MapTiles> maps = new List<MapTiles>();
     private List<MapObject> instantiateMaps = new List<MapObject>();
+    public Transform StartTransform;
+    public int mapSize;
+    public int cornerMapSize;
+
     public int mapCount
     {
         get
@@ -27,8 +31,10 @@ public class MapManager : MonoBehaviour
                 continue;
             }
             var mapObject = (GameObject)GameObject.Instantiate(result, this.gameObject.transform);
+
             mapObject.name = map.name;
             var mapTilesComponent = mapObject.GetComponent<MapObject>();
+            mapObject.transform.localScale = mapTilesComponent.mapSize;
             mapTilesComponent.price = map.price;
             mapTilesComponent.owneruid = map.owneruid;
             mapTilesComponent.mapType = map.mapType;

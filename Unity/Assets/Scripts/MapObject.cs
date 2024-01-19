@@ -10,9 +10,13 @@ public class MapObject : MonoBehaviour
     public Sprite mapImg;
     public bool isCanBuy;
     public bool isCanUpgrade;
+    public GameObject mapPlaneObject;
 
-    [Tooltip("轉動玩家角度，控制玩家前進方向")]
+    [Header("轉動玩家角度，控制玩家前進方向")]
     public Vector3 playerRotationAngle;
+
+    [Header("地圖大小")]
+    public Vector3 mapSize;
 
     public long owneruid;
     public MapStage stage;

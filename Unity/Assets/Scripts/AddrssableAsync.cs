@@ -24,13 +24,6 @@ public static class AddrssableAsync
         {
             Addressables.UpdateCatalogs().WaitForCompletion();
         }
-
-        //Addressables.InitializeAsync().Completed += (Result) =>
-        //{
-        //    Addressables.CheckForCatalogUpdates().WaitForCompletion();
-        //    Addressables.UpdateCatalogs().WaitForCompletion();
-        //    //await InitCompletedCallback();
-        //};
     }
     private static async Task InitCompletedCallback()
     {
