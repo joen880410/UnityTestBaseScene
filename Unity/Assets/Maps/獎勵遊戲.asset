@@ -17,7 +17,7 @@ MonoBehaviour:
   mapImg: {fileID: 0}
   isCanBuy: 1
   isCanUpgrade: 0
-  mapSize: {x: 0.07, y: 0, z: 0.116}
+  mapSize: {x: 0.07, y: 1, z: 0.116}
   playerRotationAngle: {x: 0, y: 0, z: 0}
   owneruid: 0
   stage: 0
