@@ -33,7 +33,21 @@ public class MapManager : MonoBehaviour
             var mapObject = (GameObject)GameObject.Instantiate(result, this.gameObject.transform);
 
             mapObject.name = map.name;
-            instantiateMaps.Add(mapObject.GetComponent<MapObject>());
+            //一排有8個地圖
+            if (i % 8 != 0)
+            {
+                mapObject.transform.position = StartTransform.position;
+                var newXPos = mapObject.transform.position.x + i * map.mapSize.x;
+                mapObject.transform.position = new Vector3(newXPos, mapObject.transform.position.y, mapObject.transform.position.z);
+            }
+            else
+            {
+                mapObject.transform.position = StartTransform.position;
+            }
+
+            var mapTilesComponent = mapObject.GetComponent<MapObject>();
+            mapTilesComponent.SetData(map);
+            instantiateMaps.Add(mapTilesComponent);
         }
     }
     public MapObject GetMapObject(int index)
